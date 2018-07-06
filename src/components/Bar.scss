@@ -1,0 +1,37 @@
+.votes_bar {
+  list-style: none;
+  display: flex;
+  width: 90%;
+  margin: 0 0 20px 0;
+  padding: 0;
+  .tick {
+    display: flex;
+    height: 30px;
+    background: black;
+    margin: 0.5px;
+  }
+}
+
+.results {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  img {
+    height: 45px;
+    border-radius: 100px;
+  }
+  .box {
+    display: flex;
+    flex-direction: row;
+    .stats {
+      display: flex;
+      flex-direction: column;
+      line-height: 21px;
+      margin: 2px 10px;
+    }
+    .float_right {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
