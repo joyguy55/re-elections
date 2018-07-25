@@ -2,75 +2,94 @@ import React from "react";
 import PropTypes from "prop-types";
 import { close } from "../utils/svg";
 import "./ToolTip.scss";
+import { $democratic_color, $republican_color } from "../styles/vars.js";
 
 const ToolTip = props => {
-  const { handleBlur, top, left, selectedState, closeToolTip } = props;
+  const {
+    handleBlur,
+    top,
+    left,
+    selectedState,
+    closeToolTip,
+    actualOrHype
+  } = props;
   const state = selectedState;
-  const votesPerElectorate = Math.trunc(state.TOTAL_VOTES / state.Total_EV);
+  const votesPerElectorate = Math.trunc(state.total_votes / state.total_actual);
+  const candidates = [
+    { name: "Trump", candidate: "trump", color: $republican_color },
+    { name: "Hillary", candidate: "hillary", color: $democratic_color },
+    { name: "Johnson", candidate: "johnson", color: "#ffff00" }
+  ];
+
   const votePercentage = votes => {
-    return ((votes / state.TOTAL_VOTES) * 100).toFixed(2) + "%";
+    return ((votes / state.total_votes) * 100).toFixed(2) + "%";
   };
+
   return (
     <div
-      className="tooltip"
+      className="province_stats"
       style={{ top: `${top}px`, left: `${left}px` }}
       onBlur={handleBlur}
     >
       <h1 className="heading">
-        <span>{state.STATE}</span>
+        <span>{state.province}</span>
         <span>{close(closeToolTip)}</span>
       </h1>
+      <span className="total_electorates">
+        Electoral Votes: {state.total_actual}
+      </span>
       <div className="electorate">
-        <span>Electoral Votes: {state.Total_EV}</span>
-        <div className="standards">
-          Votes per electorate:
-          <span className="first">
-            {votesPerElectorate.toLocaleString("en")}
-          </span>
-          <span className="percentage">
-            {votePercentage(votesPerElectorate)}
-          </span>
-          <span className="ev_awarded">1</span>
-        </div>
+        Votes per electorate:
+        <span className="percentage">{votePercentage(votesPerElectorate)}</span>
+        <span className="first">{votesPerElectorate.toLocaleString("en")}</span>
+        <span className="ev_awarded">1</span>
       </div>
-      <div className="data_container">
-        <div className="row" style={{ borderBottom: "solid 1px #b91f21" }}>
-          <span>Trump</span>
-          <div>
-            <span className="popular_vote">
-              {state.Trump_Votes.toLocaleString("en")}
-            </span>
-            <span className="percentage">
-              {votePercentage(state.Trump_Votes)}
-            </span>
-            <span className="ev_awarded">{state.Trump_Hype}</span>
-          </div>
-        </div>
-        <div className="row" style={{ borderBottom: "solid 1px #1b80d3" }}>
-          <span>Hillary</span>
-          <div>
-            <span className="popular_vote">
-              {state.Hillary_Votes.toLocaleString("en")}
-            </span>
-            <span className="percentage">
-              {votePercentage(state.Hillary_Votes)}
-            </span>
-            <span className="ev_awarded">{state.Hillary_Hype}</span>
-          </div>
-        </div>
-        <div className="row" style={{ borderBottom: "solid 1px #F9FF15" }}>
-          <span>Johnson</span>
-          <div>
-            <span className="popular_vote">
-              {state.Johnson_Votes.toLocaleString("en")}
-            </span>
-            <span className="percentage">
-              {votePercentage(state.Johnson_Votes)}
-            </span>
-            <span className="ev_awarded">{state.Johnson_Hype}</span>
-          </div>
-        </div>
-      </div>
+      <table className="results-table">
+        <tbody>
+          {candidates.map((obj, i) => {
+            const { name, candidate, color } = obj;
+            return (
+              <tr className="type-republican" key={i}>
+                <th scope="row" className="results_name">
+                  <span className="name-combo">
+                    <span className="token token-party">
+                      <abbr title="Republican">R</abbr>
+                    </span>{" "}
+                    {name}
+                  </span>
+                </th>
+
+                <td className="results_percentage">
+                  <span className="percentage_combo">
+                    <span className="number">
+                      {votePercentage(state[`${candidate}_votes`])}
+                    </span>
+                    <span className="graph">
+                      <span className="bar">
+                        <span
+                          className="index"
+                          style={{
+                            width: `${votePercentage(
+                              state[`${candidate}_votes`]
+                            )}`,
+                            background: color
+                          }}
+                        />
+                      </span>
+                    </span>
+                  </span>
+                </td>
+                <td className="results_popular">
+                  {state[`${candidate}_votes`].toLocaleString("en")}
+                </td>
+                <td className="delegates_cell">
+                  {state[`${candidate}_${actualOrHype}`]}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -80,11 +99,11 @@ ToolTip.defaultProps = {
 };
 
 ToolTip.propTypes = {
-  handleBlur: PropTypes.function,
+  handleBlur: PropTypes.func,
   left: PropTypes.number,
   top: PropTypes.number,
   selectedState: PropTypes.object,
-  closeToolTip: PropTypes.function
+  closeToolTip: PropTypes.func
 };
 
 export default ToolTip;

@@ -1,47 +1,56 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import './App.scss';
+import "./App.scss";
 
-import Navbar from './components/Navbar';
+import Navbar from "./components/Navbar";
 
-import Section from './pages/Section';
+import About from "./pages/About";
+import Section from "./pages/Section";
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-        electionData: [],
+      electionData: []
     };
   }
 
   componentDidMount() {
-    fetch('http://localhost:8080/presidential_2016').then(response => {
-        if (response.status !== 200) {
-            console.log(`There was a problem: ${response.status}`);
-            return;
-        }
-        response
-          .json()
-          .then(data => {
-              this.setState({
-                  electionData: data[0]
-              });
-          });
+    fetch("http://localhost:8080/presidential_2016").then(response => {
+      if (response.status !== 200) {
+        console.log(`There was a problem: ${response.status}`);
+        return;
+      }
+      response.json().then(data => {
+        this.setState({
+          electionData: data[0]
+        });
+      });
     });
   }
 
   render() {
-    const { electionData} = this.state
+    const { electionData } = this.state;
     return (
       <Router>
         <div className="App">
-          <Navbar/>
-            <Switch>
-              <Route
-                path="/"
-                component={()=>{ return <Section electionData={electionData}/>}}
-              />
-            </Switch>
+          <Navbar />
+          <Switch>
+            <Route
+              exact
+              path="/"
+              component={() => {
+                return <Section electionData={electionData} />;
+              }}
+            />
+            <Route
+              exact
+              path="/about"
+              component={() => {
+                return <About />;
+              }}
+            />
+          </Switch>
         </div>
       </Router>
     );

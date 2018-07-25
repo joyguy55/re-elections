@@ -4,9 +4,25 @@
   height: 80px;
   display: flex;
   justify-content: space-between;
-  padding: 50px 0 0 0;
+  padding-top: 30px;
+  margin-bottom: 30px;
   color: $primary-color;
   font-family: $body;
   font-weight: 700;
   font-size: 14px;
+
+  .home_icon {
+    font-size: 22px;
+  }
+
+  ul {
+    list-style: none;
+    li {
+      display: inline;
+      margin: 0 10px;
+    }
+    a {
+      text-decoration: none;
+    }
+  }
 }

@@ -1,65 +1,36 @@
-import React, { Fragment } from "react";
+import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
+import { $democratic_color, $republican_color } from "../styles/vars.js";
+import ReactTooltip from "react-tooltip";
 import "./Bar.scss";
 
-const Bar = props => {
-  const orderedVotes = () => {
-    const hypetheticalValuesHillary = props.electionData.reduce((acc, obj) => {
-      return acc.concat([
-        {
-          state: obj.STATE,
-          ev: obj.Hillary_Hype,
-          candidate: "Hillary"
-        }
-      ]);
-    }, []);
-    let hypetheticalValuesTrump = props.electionData.reduce((acc, obj) => {
-      return acc.concat([
-        {
-          state: obj.STATE,
-          ev: obj.Trump_Hype,
-          candidate: "Trump"
-        }
-      ]);
-    }, []);
-    let hypetheticalValuesJohnson = props.electionData.reduce((acc, obj) => {
-      return acc.concat([
-        {
-          state: obj.STATE,
-          ev: obj.Johnson_Hype,
-          candidate: "Johnson"
-        }
-      ]);
-    }, []);
-
-    const filteredList = [
-      ...hypetheticalValuesHillary,
-      ...hypetheticalValuesTrump,
-      ...hypetheticalValuesJohnson
-    ].filter(obj => {
-      if (obj.ev === 0) {
-        return false;
-      } else if (obj.state !== "Totals") {
-        return true;
-      }
-      return false;
-    });
-
-    return filteredList;
+class Bar extends Component {
+  state = {
+    province: "",
+    hoverBar: ""
   };
 
-  const orderedVotesWithColors = () => {
-    const orderVotesWithColor = orderedVotes().map(state => {
+  handleHoverBar = (province, candidate, hoverBar) => {
+    this.setState({
+      province,
+      province_id: `${candidate}${province}`,
+      hoverBar
+    });
+  };
+
+  orderedVotesWithColors = () => {
+    const { orderedVotes } = this.props;
+    const orderVotesWithColor = orderedVotes.map(province => {
       let obj = null;
-      switch (state.candidate) {
-        case "Trump":
-          obj = { ...state, color: "#d74c32" };
+      switch (province.candidate) {
+        case "trump":
+          obj = { ...province, color: $republican_color };
           break;
-        case "Hillary":
-          obj = { ...state, color: "#3c459f" };
+        case "hillary":
+          obj = { ...province, color: $democratic_color };
           break;
-        case "Johnson":
-          obj = { ...state, color: "#d7c732" };
+        case "johnson":
+          obj = { ...province, color: "#d7c732" };
           break;
         default:
           console.log("undefined");
@@ -68,47 +39,102 @@ const Bar = props => {
     });
     return orderVotesWithColor;
   };
-  return (
-    <Fragment>
-      <ol className="votes_bar">
-        {orderedVotesWithColors().map((state, i) => {
-          return (
-            <li
-              key={i}
-              className="tick"
-              style={{ flexGrow: `${state.ev}`, background: `${state.color}` }}
-            />
-          );
-        })}
-      </ol>
-      <div className="results">
-        <div className="box">
-          <img src="/clinton.jpg" />
-          <div className="stats">
-            <span>Hillary Clinton </span>
-            <span>{props.electionData[54].Hillary_Hype}</span>
+
+  electoralVotes = () => {
+    const currentState = this.orderedVotesWithColors().find(obj => {
+      return obj.province === this.state.province;
+    });
+    return currentState ? currentState.electoral_vote : 0;
+  };
+
+  render() {
+    const { actualOrHype, electionData } = this.props;
+    const total = electionData[54];
+    return (
+      <Fragment>
+        <div className="results">
+          <div className="box">
+            <img src="/clinton.jpg" alt="" />
+            <div className="stats">
+              <span className="candidate">Hillary Clinton </span>
+              <span>
+                <span className="total">
+                  {total[`hillary_${actualOrHype}`]}
+                </span>
+                <span className="vote_label">Electoral votes</span>
+              </span>
+            </div>
+          </div>
+          <div className="box">
+            <div className="stats">
+              <span className="candidate right_align">Donald Trump</span>
+              <span>
+                <span className="vote_label">Electoral votes</span>
+                <span className="total">{total[`trump_${actualOrHype}`]}</span>
+              </span>
+            </div>
+            <img src="/trump.jpg" alt="" />
+          </div>
+          <div className="box">
+            <div className="stats">
+              <span className="candidate right_align">Gary Johnson</span>
+              <span>
+                <span className="vote_label">Electoral votes</span>
+                <span className="total">
+                  {total[`johnson_${actualOrHype}`]}
+                </span>
+              </span>
+            </div>
+            <img src="/johnson.jpg" alt="" />
           </div>
         </div>
-        <div className="box">
-          <div className="stats ">
-            <span>Donald Trump </span>
-            <span className="float_right">
-              {props.electionData[54].Trump_Hype}
+        <ReactTooltip place="top" type="dark" effect="solid" delayShow={10}>
+          <div className="province_container">
+            <span className="province">{this.state.province}</span>
+            <span className="votes">
+              {`Electoral votes ${this.electoralVotes()}`}
             </span>
           </div>
-          <img src="/trump.jpg" />
-        </div>
-      </div>
-    </Fragment>
-  );
-};
+        </ReactTooltip>
+        <ol className="votes_bar">
+          {this.orderedVotesWithColors().map((obj, i) => {
+            const { province, candidate, electoral_vote, color } = obj;
+            return (
+              <li
+                key={i}
+                data-tip
+                className={`tick ${
+                  `${candidate}${province}` === `${this.state.province_id}`
+                    ? this.state.hoverBar
+                    : ""
+                }`}
+                style={{
+                  flexGrow: `${electoral_vote}`,
+                  background: `${color}`
+                }}
+                onMouseEnter={() => {
+                  this.handleHoverBar(province, candidate, "hovered");
+                }}
+                onMouseLeave={() => {
+                  this.handleHoverBar("", "");
+                }}
+              />
+            );
+          })}
+        </ol>
+      </Fragment>
+    );
+  }
+}
 
 Bar.defaultProps = {
   electionData: []
 };
 
 Bar.propTypes = {
-  electionData: PropTypes.array
+  electionData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  orderedVotes: PropTypes.array,
+  actualOrHype: PropTypes.string
 };
 
 export default Bar;

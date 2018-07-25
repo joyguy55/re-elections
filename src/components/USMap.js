@@ -15,17 +15,17 @@ class USMap extends Component {
   }
 
   componentDidMount() {
-    const { map, usData, electionData } = this.props;
-    const { node, handleToolTip } = this;
-    const mapFunction = selectMap(map);
-    mapFunction(usData, electionData, node, handleToolTip);
+    const { mapType, usData, electionData } = this.props;
+    const { node, handleToolTip, closeToolTip } = this;
+    const mapFunction = selectMap(mapType);
+    mapFunction(usData, electionData, node, handleToolTip, closeToolTip);
   }
 
   componentDidUpdate() {
-    const { map, usData, electionData } = this.props;
-    const { node, handleToolTip } = this;
-    const mapFunction = selectMap(map);
-    mapFunction(usData, electionData, node, handleToolTip);
+    const { mapType, usData, electionData } = this.props;
+    const { node, handleToolTip, closeToolTip } = this;
+    const mapFunction = selectMap(mapType);
+    mapFunction(usData, electionData, node, handleToolTip, closeToolTip);
   }
 
   handleBlur = () => {
@@ -33,9 +33,15 @@ class USMap extends Component {
     this.setState({ toolTipIsOpen: false });
   };
 
+  closeToolTip = () => {
+    this.setState({
+      toolTipIsOpen: false
+    });
+  };
+
   handleToolTip = state => {
     const selectedState = this.props.electionData.find(data => {
-      return data.State_GeoJson_ID === parseInt(state.id, 0);
+      return data.state_geo_json_id === parseInt(state.id, 0);
     });
     this.setState({
       top: d3.event.pageY - 220,
@@ -46,14 +52,9 @@ class USMap extends Component {
     });
   };
 
-  closeToolTip = () => {
-    this.setState({
-      toolTipIsOpen: false
-    });
-  };
-
   render() {
     const { toolTipIsOpen, top, left, selectedState } = this.state;
+    const { actualOrHype } = this.props;
     return (
       <Fragment>
         <svg
@@ -61,53 +62,10 @@ class USMap extends Component {
           ref={node => {
             this.node = node;
           }}
-          width={625}
-          height={450}
-          viewBox="160 30 700 500"
-        >
-          <defs>
-            <linearGradient
-              id="svgGradient"
-              x1="0%"
-              x2="100%"
-              y1="0%"
-              y2="100%"
-            >
-              <stop
-                class="start"
-                offset="0%"
-                stop-color="#d74c32"
-                stop-opacity="1"
-              />
-              <stop
-                class="end"
-                offset="100%"
-                stop-color="#3c459f"
-                stop-opacity="1"
-              />
-            </linearGradient>
-            <linearGradient
-              id="svgGradientLight"
-              x1="0%"
-              x2="100%"
-              y1="0%"
-              y2="100%"
-            >
-              <stop
-                class="start"
-                offset="0%"
-                stop-color="#F1664C"
-                //stop-opacity="1"
-              />
-              <stop
-                class="end"
-                offset="100%"
-                stop-color="#565FB9"
-                //stop-opacity="1"
-              />
-            </linearGradient>
-          </defs>
-        </svg>
+          width="100%"
+          height="650px"
+          viewBox="225 50 500 500"
+        />
         {toolTipIsOpen ? (
           <ToolTip
             handleBlur={this.handleBlur}
@@ -115,6 +73,7 @@ class USMap extends Component {
             left={left}
             selectedState={selectedState}
             closeToolTip={this.closeToolTip}
+            actualOrHype={actualOrHype}
           />
         ) : (
           <span />
@@ -126,8 +85,9 @@ class USMap extends Component {
 
 USMap.propTypes = {
   electionData: PropTypes.array,
-  usData: PropTypes.obj,
-  map: PropTypes.string
+  usData: PropTypes.array,
+  mapType: PropTypes.string,
+  actualOrHype: PropTypes.string
 };
 
 export default USMap;

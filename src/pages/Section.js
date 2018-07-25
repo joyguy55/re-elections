@@ -1,21 +1,23 @@
 import React, { Component } from "react";
-import { chevronLeft, chevronRight } from "../utils/svg";
 import { feature } from "topojson-client";
 import "./Section.scss";
-
-import content from "../utils/content.js";
+import { selectBar } from "../utils/bars";
 
 import Bar from "../components/Bar";
 import USMap from "../components/USMap";
-import Content from "../components/Content";
+import Switch from "../components/Switch";
+// TODO add previous years
+// import Select from "../components/Select";
 
 class Section extends Component {
   constructor() {
     super();
     this.state = {
       usData: [],
-      section: 0,
-      loading: true
+      mapType: "createMapActualResult",
+      actualOrHype: "actual",
+      loading: true,
+      switchLabel: "Winner take all"
     };
   }
 
@@ -34,45 +36,60 @@ class Section extends Component {
     });
   }
 
-  setSection = next => {
-    const { section } = this.state;
-    if (next === "next" && section !== 4) {
-      this.setState({
-        section: section + 1
-      });
-    } else if (next === "back" && section !== 0) {
-      this.setState({
-        section: section - 1
-      });
-    }
+  electionResultSwitch = () => {
+    const mapType =
+      "createMapActualResult" === this.state.mapType
+        ? "createMapHypetheticalResult"
+        : "createMapActualResult";
+    const actualOrHype =
+      "actual" === this.state.actualOrHype ? "hype" : "actual";
+    const switchLabel =
+      "Winner take all" === this.state.switchLabel
+        ? "Split Vote"
+        : "Winner take all";
+    this.setState({
+      mapType,
+      actualOrHype,
+      switchLabel
+    });
   };
 
   render() {
     const { electionData } = this.props;
-    const { section, loading } = this.state;
+    const { loading, mapType, actualOrHype, switchLabel } = this.state;
+    const selectedElectoralBar = selectBar(electionData, actualOrHype)();
+
     return (
       <div className="inner_container">
-        <div>
-          {loading ? (
-            <span>Is loading...</span>
-          ) : (
-            <Bar electionData={electionData} />
-          )}
-          <USMap
+        <div className="header">
+          <h1>
+            What would presidential elections look like if electoral votes were
+            split by each states popular vote?
+          </h1>
+        </div>
+        <hr />
+        {loading ? (
+          <span>Is loading...</span>
+        ) : (
+          <Bar
             electionData={electionData}
-            map={content[section].map}
-            usData={this.state.usData}
+            orderedVotes={selectedElectoralBar}
+            actualOrHype={actualOrHype}
+          />
+        )}
+        <div className="options_container">
+          {/* <Select options={["2016", "2012", "2008"]} /> */}
+          <Switch
+            side_label={switchLabel}
+            handleSwitch={this.electionResultSwitch}
           />
         </div>
-        <div>
-          {chevronLeft(() => {
-            this.setSection("back");
-          })}
-          {chevronRight(() => {
-            this.setSection("next");
-          })}
-          <Content content={content[section]} />
-        </div>
+        <USMap
+          electionData={electionData}
+          mapType={mapType}
+          usData={this.state.usData}
+          actualOrHype={actualOrHype}
+        />
       </div>
     );
   }

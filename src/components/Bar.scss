@@ -1,37 +1,72 @@
 .votes_bar {
   list-style: none;
   display: flex;
-  width: 90%;
-  margin: 0 0 20px 0;
+  width: 80%;
   padding: 0;
+  margin: auto;
+  margin-bottom: 30px;
+
   .tick {
     display: flex;
-    height: 30px;
+    height: 3em;
     background: black;
     margin: 0.5px;
+  }
+  .tick.hovered {
+    transform: translateY(-4px);
+    transition: all 0.1s ease;
   }
 }
 
 .results {
-  width: 90%;
   display: flex;
   justify-content: space-between;
-  img {
-    height: 45px;
-    border-radius: 100px;
-  }
+  margin: auto;
+  width: 80%;
+  margin-bottom: 10px;
+
   .box {
     display: flex;
     flex-direction: row;
     .stats {
       display: flex;
       flex-direction: column;
-      line-height: 21px;
       margin: 2px 10px;
+      .candidate {
+        font-size: 1em;
+        margin: 0 -0.2em -0.5em -0.2em;
+      }
+      .right_align {
+        display: flex;
+        justify-content: flex-end;
+      }
+      .total {
+        font-size: 2em;
+      }
+      .vote_label {
+        font-size: 0.7em;
+        margin: 10px 7px;
+        vertical-align: top;
+        display: inline-block;
+      }
     }
-    .float_right {
-      display: flex;
-      justify-content: flex-end;
+    img {
+      height: 4em;
+      border-radius: 100px;
     }
+  }
+}
+
+.province_container {
+  display: flex;
+  flex-direction: column;
+
+  .province {
+    margin: auto;
+    font-size: 1em;
+  }
+  .votes {
+    margin: auto;
+    font-size: 0.8em;
   }
 }

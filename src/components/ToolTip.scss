@@ -1,16 +1,15 @@
 @import "../styles/vars.scss";
 
-.tooltip {
-  padding: 17px;
+.province_stats {
+  padding: 12px 17px;
   display: flex;
   flex-direction: column;
-  width: 375px;
+  width: 400px;
   position: absolute;
   background: #fff;
   text-align: left;
-  background: $background-dark;
-  color: lighten($text-dark, 20%);
   font-family: $body;
+  border: 2px solid black;
 
   .heading {
     font-size: 1.5rem;
@@ -20,14 +19,15 @@
     justify-content: space-between;
   }
 
-  .electorate {
-    font-size: 0.85em;
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 1em;
+  .total_electorates {
+    font-size: 15px;
   }
 
-  .standards {
+  .electorate {
+    font-size: 0.75em;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5em 0 1em 0;
     .first {
       font-size: 0.6em;
     }
@@ -41,26 +41,83 @@
 
     .row {
       font-size: 1em;
-      padding: 0.4em 0;
+      padding: 0.3em 0;
       display: flex;
       justify-content: space-between;
 
-      .popular_vote {
-        font-size: 0.6em;
-        line-height: 1.8em;
-      }
+      .data_row {
+        width: 80%;
+        display: inherit;
 
-      .percentage {
-        margin-left: 15px;
-      }
+        .popular_vote {
+          font-size: 0.6em;
+          line-height: 1.8em;
+        }
 
-      .ev_awarded {
-        margin-left: 15px;
+        .percentage {
+          margin-left: 15px;
+        }
+
+        .ev_awarded {
+          margin-left: 15px;
+        }
       }
+    }
+
+    .line {
+      height: 2.25px;
+      width: 100%;
     }
   }
 }
 
-span {
-  margin: 0;
+tbody {
+  display: table-row-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+
+tr {
+  display: table-row;
+  vertical-align: inherit;
+  border-color: inherit;
+}
+
+th,
+td {
+  font-size: 0.75em;
+  line-height: 1.2em;
+  padding: 0.5em 0;
+}
+
+td {
+  text-align: right;
+}
+
+.percentage_combo {
+  display: table;
+  width: 100%;
+  .number {
+    display: table-cell;
+    width: 2em;
+    font-size: 10px;
+  }
+  .graph {
+    display: table-cell;
+    vertical-align: middle;
+    width: 80%;
+    padding: 0 5px;
+  }
+}
+
+.results_name {
+  width: 20%;
+}
+
+.results_popular {
+  width: 4.5em;
+}
+
+.delegates_cell {
+  width: 1.5em;
 }
